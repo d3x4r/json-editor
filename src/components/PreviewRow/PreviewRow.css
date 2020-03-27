@@ -1,0 +1,11 @@
+.previewRow {
+  display: flex;
+  align-items: flex-start;
+
+  margin-bottom: 5px;
+}
+
+.previewRow__splitter {
+  margin-right: 3px;
+  margin-left: 3px;
+}
