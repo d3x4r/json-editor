@@ -1,20 +1,29 @@
-import React from "react";
-import JsonEditor from "../JsonEditor";
-import "./PreviewForm.css";
+import React, { useState } from 'react';
+import JsonEditor from '../JsonEditor';
+import './PreviewForm.css';
 
 type PreviewFormProps = {
   data: {};
-  calculateResult: (state: any) => void;
+  calculateResult: (state: {}) => void;
 };
 
-const PreviewForm: React.FC<PreviewFormProps> = props => {
+const PreviewForm: React.FC<PreviewFormProps> = (props) => {
   const { data, calculateResult } = props;
+  const [previewFormState, updatePreviewForm] = useState(data);
+
+  const havingData = Object.keys(previewFormState).length;
   return (
     <section className="preview-form">
       <h2 className="preview-form__title">Preview</h2>
       <div className="preview-form__result">
-        {Object.keys(data).length ? (
-          <JsonEditor data={data} onChangeHandler={calculateResult} parent="" />
+        {havingData ? (
+          <JsonEditor
+            data={previewFormState}
+            calculatedData={data}
+            calculateResult={calculateResult}
+            updatePreviewForm={updatePreviewForm}
+            parent=""
+          />
         ) : (
           <p className="preview-form__message">No data to render</p>
         )}

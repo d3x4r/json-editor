@@ -1,24 +1,33 @@
-import React from "react";
-// import uniqueId from "lodash.uniqueid";
-import PreviewRow from "../PreviewRow";
+import React from 'react';
+import PreviewRow from '../PreviewRow';
 
 interface JsonEditorProps {
   data: { [key: string]: any };
+  calculatedData: {};
   parent: string;
-  onChangeHandler: (state: any) => void;
+  calculateResult: (state: {}) => void;
+  updatePreviewForm: (state: {}) => void;
 }
 
-const JsonEditor: React.FC<JsonEditorProps> = props => {
-  const { data, onChangeHandler, parent } = props;
-  const result = Object.keys(data).map(key => {
+const JsonEditor: React.FC<JsonEditorProps> = (props) => {
+  const {
+    data,
+    calculateResult,
+    calculatedData,
+    updatePreviewForm,
+    parent
+  } = props;
+  const result = Object.keys(data).map((key) => {
     const parentPath = parent ? `${parent}.${key}` : key;
     return (
       <PreviewRow
         name={key}
         value={data[key]}
-        onChangeHandler={onChangeHandler}
+        calculatedData={calculatedData}
+        calculateResult={calculateResult}
+        updatePreviewForm={updatePreviewForm}
         parent={parentPath}
-        // key={uniqueId()}
+        key={parentPath}
       />
     );
   });

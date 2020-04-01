@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import JsonEditor from "../JsonEditor";
-import unset from "lodash.unset";
-import set from "lodash.set";
-import get from "lodash.get";
-// import omit from "lodash.omit";
-import "./PreviewRow.css";
+import React, { useState } from 'react';
+import JsonEditor from '../JsonEditor';
+import * as R from 'ramda';
+import get from 'lodash.get';
+import './PreviewRow.css';
 
 interface PreviewRowProps {
   name: string;
   value: any;
+  calculatedData: {};
   parent: string;
-  onChangeHandler: (state: any) => void;
+  calculateResult: (state: {}) => void;
+  updatePreviewForm: (state: {}) => void;
 }
 
 const getPathOfProperty = (parentPath: string, property: string) =>
@@ -20,64 +20,81 @@ const isObject = (item: any) => {
   return item instanceof Object && !(item instanceof Array);
 };
 
-const PreviewRow: React.FC<PreviewRowProps> = props => {
-  const { name, value: objValue, onChangeHandler, parent } = props;
-  const [inputName, setInputName] = useState(name);
+const PreviewRow: React.FC<PreviewRowProps> = (props) => {
+  const {
+    name,
+    value: objValue,
+    calculatedData,
+    calculateResult,
+    updatePreviewForm,
+    parent
+  } = props;
+
+  const [objKeyInput, setObjKeyInput] = useState(name);
   const [currentParent, setParent] = useState(parent);
-  // const valueIsObject =
-  //   objValue instanceof Object && !(objValue instanceof Array);
+  const [savedPropValue, savePropValue] = useState(objValue);
+  const [objValueInput, setObjValueInput] = useState(objValue);
+
+  const parentPath = parent
+    .split('.')
+    .slice(0, -1)
+    .join('.');
+  const prevPath = getPathOfProperty(parentPath, objKeyInput);
+  const oldPropertyValue = get(calculatedData, prevPath);
 
   const onChangeKey = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { value }
     } = evt;
-    onChangeHandler((state: any) => {
-      const copyState = { ...state };
 
-      const parentPath = parent
-        .split(".")
-        .slice(0, -1)
-        .join(".");
+    const currentPath = getPathOfProperty(parentPath, value);
 
-      const prevPath = getPathOfProperty(parentPath, inputName);
-      const currentPath = getPathOfProperty(parentPath, value);
-
-      const oldValue = get(copyState, prevPath);
-      if (isObject(oldValue)) {
-        setParent(currentPath);
-        set(copyState, currentPath, oldValue);
-        unset(copyState, prevPath);
-      } else {
-        unset(copyState, prevPath);
-        set(copyState, currentPath, objValue);
-      }
-
-      return copyState;
+    calculateResult((state: {}) => {
+      const stateWithNewAddedKey = R.assocPath(
+        currentPath.split('.'),
+        oldPropertyValue,
+        state
+      );
+      const stateWithoutDeletedKey = R.dissocPath(
+        prevPath.split('.'),
+        stateWithNewAddedKey
+      );
+      return stateWithoutDeletedKey;
     });
-    setInputName(value);
+    savePropValue(oldPropertyValue);
+    setParent(currentPath);
+    setObjKeyInput(value);
+  };
+
+  const onChangeValue = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const {
+      target: { value }
+    } = evt;
+
+    calculateResult((state: {}) => {
+      return R.assocPath(prevPath.split('.'), value, state);
+    });
+    setObjValueInput(value);
   };
 
   return (
     <div className="previewRow">
       <input
         className="previewRow__key"
-        value={inputName}
+        value={objKeyInput}
         onChange={onChangeKey}
-        data-type="keyInput"
       />
       <span className="previewRow__splitter">:</span>
-      {isObject(objValue) ? (
+      {isObject(savedPropValue) ? (
         <JsonEditor
-          data={objValue}
-          onChangeHandler={onChangeHandler}
+          data={savedPropValue}
+          calculateResult={calculateResult}
+          calculatedData={calculatedData}
+          updatePreviewForm={updatePreviewForm}
           parent={currentParent}
         />
       ) : (
-        <input
-          defaultValue={objValue}
-          onChange={onChangeKey}
-          data-type="valueInput"
-        />
+        <input value={objValueInput} onChange={onChangeValue} />
       )}
     </div>
   );
