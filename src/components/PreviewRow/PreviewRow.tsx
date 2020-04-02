@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import JsonEditor from '../JsonEditor';
 import * as R from 'ramda';
 import get from 'lodash.get';
+import ValueTypeChanger from '../ValueTypeChanger';
 import './PreviewRow.css';
 
 interface PreviewRowProps {
@@ -13,11 +14,30 @@ interface PreviewRowProps {
   updatePreviewForm: (state: {}) => void;
 }
 
+type typesToConvert = 'string' | 'number' | 'boolean' | 'array';
+
 const getPathOfProperty = (parentPath: string, property: string) =>
   parentPath ? `${parentPath}.${property}` : property;
 
 const isObject = (item: any) => {
   return item instanceof Object && !(item instanceof Array);
+};
+
+const isArray = (item: any) => {
+  return item instanceof Object && item instanceof Array;
+};
+
+const getValueType = (item: any) => (isArray(item) ? 'array' : typeof item);
+
+const converters = {
+  string: (value: any) => String(value),
+  number: (value: any) => Number(value),
+  boolean: (value: any) => Boolean(value),
+  array: (value: any) => String(value).split(',')
+};
+
+const convertValueType = (value: any, type: typesToConvert): any => {
+  return converters[type](value);
 };
 
 const PreviewRow: React.FC<PreviewRowProps> = (props) => {
@@ -34,11 +54,24 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   const [currentParent, setParent] = useState(parent);
   const [savedPropValue, savePropValue] = useState(objValue);
   const [objValueInput, setObjValueInput] = useState(objValue);
+  const [valueType, setValueType] = useState(getValueType(objValueInput));
 
   const parentPath = parent
     .split('.')
     .slice(0, -1)
     .join('.');
+
+  const changeObjectPropertyType = (valueType: string) => {
+    setValueType(valueType);
+    const convertedValue = isObject(objValueInput)
+      ? objValueInput
+      : convertValueType(objValueInput, valueType as typesToConvert);
+
+    calculateResult((state: {}) =>
+      R.assocPath(prevPath.split('.'), convertedValue, state)
+    );
+  };
+
   const prevPath = getPathOfProperty(parentPath, objKeyInput);
   const oldPropertyValue = get(calculatedData, prevPath);
 
@@ -71,8 +104,12 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
       target: { value }
     } = evt;
 
+    const convertedValue = isObject(value)
+      ? value
+      : convertValueType(value, valueType as typesToConvert);
+
     calculateResult((state: {}) => {
-      return R.assocPath(prevPath.split('.'), value, state);
+      return R.assocPath(prevPath.split('.'), convertedValue, state);
     });
     setObjValueInput(value);
   };
@@ -94,7 +131,13 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
           parent={currentParent}
         />
       ) : (
-        <input value={objValueInput} onChange={onChangeValue} />
+        <>
+          <input value={objValueInput} onChange={onChangeValue} />
+          <ValueTypeChanger
+            defaultType={valueType}
+            setType={changeObjectPropertyType}
+          />
+        </>
       )}
     </div>
   );
