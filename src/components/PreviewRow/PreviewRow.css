@@ -9,3 +9,11 @@
   margin-right: 3px;
   margin-left: 3px;
 }
+
+.previewRow__splitter {
+  margin-top: 5px;
+}
+
+/* .previewRow * .previewRow {
+  margin-bottom: 0;
+} */

@@ -4,6 +4,7 @@ import * as R from 'ramda';
 import get from 'lodash.get';
 import ValueTypeChanger from '../ValueTypeChanger';
 import './PreviewRow.css';
+import { Input } from 'antd';
 
 interface PreviewRowProps {
   name: string;
@@ -114,12 +115,20 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     setObjValueInput(value);
   };
 
+  const Test = (
+    <ValueTypeChanger
+      defaultType={valueType}
+      setType={changeObjectPropertyType}
+    />
+  );
+
   return (
     <div className="previewRow">
-      <input
+      <Input
         className="previewRow__key"
         value={objKeyInput}
         onChange={onChangeKey}
+        style={{ width: 120 }}
       />
       <span className="previewRow__splitter">:</span>
       {isObject(savedPropValue) ? (
@@ -132,10 +141,11 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
         />
       ) : (
         <>
-          <input value={objValueInput} onChange={onChangeValue} />
-          <ValueTypeChanger
-            defaultType={valueType}
-            setType={changeObjectPropertyType}
+          <Input
+            value={objValueInput}
+            onChange={onChangeValue}
+            style={{ width: 220 }}
+            addonAfter={Test}
           />
         </>
       )}

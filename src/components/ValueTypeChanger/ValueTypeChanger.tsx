@@ -1,5 +1,6 @@
 import React from 'react';
 import { Select } from 'antd';
+import './ValueTypeChanger.css';
 
 const { Option } = Select;
 
@@ -14,8 +15,9 @@ const ValueTypeChanger: React.FC<ValueTypeChanger> = ({
 }) => {
   return (
     <Select
+      className="value-type-changer"
       defaultValue={defaultType}
-      style={{ width: 100 }}
+      style={{ width: 90 }}
       onChange={setType}
     >
       <Option value="string">String</Option>

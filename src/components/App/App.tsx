@@ -27,7 +27,7 @@ const App: React.FC = () => {
       </Header>
       <Content style={{ padding: '25px 75px' }}>
         <Row gutter={[8, 8]}>
-          <Col span={3}>
+          <Col span={5}>
             <DataForm
               currentValue={data}
               setValue={setData}
@@ -37,7 +37,7 @@ const App: React.FC = () => {
           <Col span={14}>
             <PreviewForm data={previewData} calculateResult={setPreviewData} />
           </Col>
-          <Col span={7}>
+          <Col span={5}>
             <Result data={previewData} />
           </Col>
         </Row>

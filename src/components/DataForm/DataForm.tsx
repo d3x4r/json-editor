@@ -1,5 +1,5 @@
-import React from "react";
-import { Form, Input, Button } from "antd";
+import React from 'react';
+import { Form, Input, Button } from 'antd';
 
 const { TextArea } = Input;
 
@@ -9,12 +9,12 @@ type DataFormProps = {
   transformData: (value: string) => void;
 };
 
-const DataForm: React.FC<DataFormProps> = props => {
+const DataForm: React.FC<DataFormProps> = (props) => {
   const { currentValue, setValue, transformData } = props;
 
   const onFormSubmit = () => {
     transformData(currentValue);
-    setValue("");
+    setValue('');
   };
 
   const onDataEdit = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -31,7 +31,7 @@ const DataForm: React.FC<DataFormProps> = props => {
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
-            RenderPreview
+            Render Preview
           </Button>
         </Form.Item>
       </Form>
