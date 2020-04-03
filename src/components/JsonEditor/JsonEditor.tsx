@@ -17,7 +17,7 @@ const JsonEditor: React.FC<JsonEditorProps> = (props) => {
     updatePreviewForm,
     parent
   } = props;
-
+  console.log(data);
   const result = Object.keys(data).map((key) => {
     const parentPath = parent ? `${parent}.${key}` : key;
     return (
@@ -32,7 +32,6 @@ const JsonEditor: React.FC<JsonEditorProps> = (props) => {
       />
     );
   });
-
   const parentsDeep = parent.split('.').length;
   // reset 5px margin to nested containers
   const marginValue = parent.split('.').length > 1 ? -5 * parentsDeep : 0;

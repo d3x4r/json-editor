@@ -5,6 +5,7 @@ import get from 'lodash.get';
 import ValueTypeChanger from '../ValueTypeChanger';
 import './PreviewRow.css';
 import { Input } from 'antd';
+import RemoveButton from '../RemoveButton';
 
 interface PreviewRowProps {
   name: string;
@@ -56,6 +57,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   const [savedPropValue, savePropValue] = useState(objValue);
   const [objValueInput, setObjValueInput] = useState(objValue);
   const [valueType, setValueType] = useState(getValueType(objValueInput));
+  const [isRenderedRow, setRenderedKey] = useState(true);
 
   const parentPath = parent
     .split('.')
@@ -115,22 +117,39 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     setObjValueInput(value);
   };
 
-  const Test = (
+  const onPropRemove = (parent: string, test: string) => () => {
+    calculateResult((state: {}) => {
+      return R.dissocPath(parent.split('.'), state);
+    });
+
+    updatePreviewForm((state: {}) => {
+      return R.dissocPath(test.split('.'), state);
+    });
+    setRenderedKey(false);
+  };
+
+  const typeChanger = (
     <ValueTypeChanger
       defaultType={valueType}
       setType={changeObjectPropertyType}
     />
   );
 
-  return (
-    <div className="previewRow">
+  const renderKey = () => (
+    <>
       <Input
         className="previewRow__key"
         value={objKeyInput}
         onChange={onChangeKey}
         style={{ width: 120 }}
       />
+      <RemoveButton onRemove={onPropRemove(currentParent, parent)} />
       <span className="previewRow__splitter">:</span>
+    </>
+  );
+
+  const renderProperty = () => (
+    <>
       {isObject(savedPropValue) ? (
         <JsonEditor
           data={savedPropValue}
@@ -140,17 +159,24 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
           parent={currentParent}
         />
       ) : (
-        <>
-          <Input
-            value={objValueInput}
-            onChange={onChangeValue}
-            style={{ width: 220 }}
-            addonAfter={Test}
-          />
-        </>
+        <Input
+          value={objValueInput}
+          onChange={onChangeValue}
+          style={{ width: 220 }}
+          addonAfter={typeChanger}
+        />
       )}
+    </>
+  );
+
+  const renderRow = () => (
+    <div className="previewRow">
+      {renderKey()}
+      {renderProperty()}
     </div>
   );
+
+  return isRenderedRow ? renderRow() : null;
 };
 
 export default PreviewRow;
