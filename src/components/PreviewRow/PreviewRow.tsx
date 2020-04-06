@@ -35,7 +35,7 @@ const converters = {
   string: (value: any) => String(value),
   number: (value: any) => Number(value),
   boolean: (value: any) => Boolean(value),
-  array: (value: any) => String(value).split(',')
+  array: (value: any) => String(value).split(','),
 };
 
 const convertValueType = (value: any, type: typesToConvert): any => {
@@ -49,7 +49,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     calculatedData,
     calculateResult,
     updatePreviewForm,
-    parent
+    parent,
   } = props;
 
   const [objKeyInput, setObjKeyInput] = useState(name);
@@ -59,10 +59,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   const [valueType, setValueType] = useState(getValueType(objValueInput));
   const [isRenderedRow, setRenderedKey] = useState(true);
 
-  const parentPath = parent
-    .split('.')
-    .slice(0, -1)
-    .join('.');
+  const parentPath = parent.split('.').slice(0, -1).join('.');
 
   const changeObjectPropertyType = (valueType: string) => {
     setValueType(valueType);
@@ -80,7 +77,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
 
   const onChangeKey = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const {
-      target: { value }
+      target: { value },
     } = evt;
 
     const currentPath = getPathOfProperty(parentPath, value);
@@ -104,7 +101,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
 
   const onChangeValue = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const {
-      target: { value }
+      target: { value },
     } = evt;
 
     const convertedValue = isObject(value)
