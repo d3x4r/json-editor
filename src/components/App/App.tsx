@@ -8,8 +8,11 @@ import { Row, Col } from 'antd';
 
 const { Header, Content } = Layout;
 
+// const exampleJSON =
+//   '{ "name": "John", "age": 35, "isAdmin": false, "friends": [0,1,2,3], "data": { "name": "John1", "age": 25, "isAdmin": true, "friends": [0,1,2,3], "nestedData1": { "name": "John2", "age": 15, "isAdmin": true, "friends": [0,1,2,3] } }, "testKey1": "testValue1", "testKey2": "testValue2", "testKey3": [1,2,3] }';
+
 const exampleJSON =
-  '{ "name": "John", "age": 35, "isAdmin": false, "friends": [0,1,2,3], "data": { "name": "John1", "age": 25, "isAdmin": true, "friends": [0,1,2,3], "nestedData1": { "name": "John2", "age": 15, "isAdmin": true, "friends": [0,1,2,3] } }, "testKey1": "testValue1", "testKey2": "testValue2", "testKey3": [1,2,3] }';
+  '{"name":"John","age":35,"isAdmin":false,"friends":[0,1,2,3],"data":{"name":"John1","age":25,"isAdmin":true,"friends":[0,1,2,3],"nestedData1":{"name":"John2","age":15,"isAdmin":true,"friends":[0,1,2,3],"nestedData2":{"name":"John3","age":25,"isAdmin":false,"friends":[0,1,2,3,5]}}},"testKey1":"testValue1","testKey2":"testValue2","testKey3":[1,2,3]}';
 
 const App: React.FC = () => {
   const [data, setData] = useState(exampleJSON);

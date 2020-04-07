@@ -14,6 +14,7 @@ interface PreviewRowProps {
   parent: string;
   calculateResult: (state: {}) => void;
   updatePreviewForm: (state: {}) => void;
+  setTestPar: (state: string) => void;
 }
 
 type typesToConvert = 'string' | 'number' | 'boolean' | 'array';
@@ -50,14 +51,17 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     calculateResult,
     updatePreviewForm,
     parent,
+    setTestPar,
   } = props;
 
   const [objKeyInput, setObjKeyInput] = useState(name);
-  const [currentParent, setParent] = useState(parent);
+  // const [currentParent, setParent] = useState(parent);
   const [savedPropValue, savePropValue] = useState(objValue);
   const [objValueInput, setObjValueInput] = useState(objValue);
   const [valueType, setValueType] = useState(getValueType(objValueInput));
   const [isRenderedRow, setRenderedKey] = useState(true);
+
+  const [curPar, setCurPar] = useState(parent);
 
   const parentPath = parent.split('.').slice(0, -1).join('.');
 
@@ -73,6 +77,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   };
 
   const prevPath = getPathOfProperty(parentPath, objKeyInput);
+
   const oldPropertyValue = get(calculatedData, prevPath);
 
   const onChangeKey = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,23 +87,36 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
 
     const currentPath = getPathOfProperty(parentPath, value);
 
+    const currentInputsPath = getPathOfProperty(parent, value);
+    const oldInputsPath = getPathOfProperty(parent, objKeyInput);
+    const oldPropValue = get(calculatedData, oldInputsPath);
     calculateResult((state: {}) => {
+      const stateWithNewKey = R.assocPath(
+        currentInputsPath.split('.'),
+        oldPropValue,
+        state
+      );
+      return R.dissocPath(oldInputsPath.split('.'), stateWithNewKey);
+    });
+
+    updatePreviewForm((state: {}) => {
       const stateWithNewAddedKey = R.assocPath(
-        currentPath.split('.'),
-        oldPropertyValue,
+        currentInputsPath.split('.'),
+        oldPropValue,
         state
       );
       const stateWithoutDeletedKey = R.dissocPath(
-        prevPath.split('.'),
+        oldInputsPath.split('.'),
         stateWithNewAddedKey
       );
+
       return stateWithoutDeletedKey;
     });
-    savePropValue(oldPropertyValue);
-    setParent(currentPath);
+
+    savePropValue(oldPropValue);
     setObjKeyInput(value);
   };
-
+  // console.log(objKeyInput);
   const onChangeValue = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { value },
@@ -120,7 +138,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     });
 
     updatePreviewForm((state: {}) => {
-      return R.dissocPath(test.split('.'), state);
+      return R.dissocPath(parent.split('.'), state);
     });
     setRenderedKey(false);
   };
@@ -140,7 +158,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
         onChange={onChangeKey}
         style={{ width: 120 }}
       />
-      <RemoveButton onRemove={onPropRemove(currentParent, parent)} />
+      <RemoveButton onRemove={onPropRemove(parent, parent)} />
       <span className="previewRow__splitter">:</span>
     </>
   );
@@ -153,7 +171,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
           calculateResult={calculateResult}
           calculatedData={calculatedData}
           updatePreviewForm={updatePreviewForm}
-          parent={currentParent}
+          parent={parent ? `${parent}.${objKeyInput}` : objKeyInput}
         />
       ) : (
         <Input

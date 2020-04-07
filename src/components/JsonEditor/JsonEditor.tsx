@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PreviewRow from '../PreviewRow';
 import AddPropertyBtn from '../AddPropertyBtn';
 import * as R from 'ramda';
@@ -23,32 +23,42 @@ const JsonEditor: React.FC<JsonEditorProps> = (props) => {
   } = props;
 
   const [objectToRender, updateObjectToRender] = useState(data);
+  const [testPar, setTestPar] = useState(parent);
 
   const getUpdatedData = (target: {}) => {
     return parent ? get(target, parent) : target;
   };
 
   const onAddHandler = () => {
+    console.log(parent);
     const propertyId = uniqueId();
-    const newKeyName = `new key ${propertyId}`;
-    const newValue = `new value ${propertyId}`;
+    const newKeyName = `newKey_${propertyId}`;
+    const newValue = `newValue_${propertyId}`;
     const newKeyPath = [...parent.split('.'), newKeyName];
     const dataWithAddedProperty = R.assocPath(
       newKeyPath.filter((key) => key),
       newValue,
       calculatedData
     );
-    calculateResult(dataWithAddedProperty);
-    updatePreviewForm(dataWithAddedProperty);
+
+    calculateResult((state: {}) => {
+      return R.assocPath(
+        newKeyPath.filter((key) => key),
+        newValue,
+        state
+      );
+    });
+    updatePreviewForm((state: {}) => {
+      return R.assocPath(
+        newKeyPath.filter((key) => key),
+        newValue,
+        state
+      );
+    });
     updateObjectToRender(getUpdatedData(dataWithAddedProperty));
   };
 
-  const getParentPath = (parent: string, key: string) =>
-    parent ? `${parent}.${key}` : key;
-
   const result = Object.keys(objectToRender).map((key) => {
-    const parentPath = getParentPath(parent, key);
-
     return (
       <PreviewRow
         name={key}
@@ -56,13 +66,14 @@ const JsonEditor: React.FC<JsonEditorProps> = (props) => {
         calculatedData={calculatedData}
         calculateResult={calculateResult}
         updatePreviewForm={updatePreviewForm}
-        parent={parentPath}
-        key={parentPath}
+        parent={parent}
+        key={key}
+        setTestPar={setTestPar}
       />
     );
   });
+  // temp reset 5px margin to nested containers
   const parentsDeep = parent.split('.').length;
-  // reset 5px margin to nested containers
   const marginValue = parent.split('.').length > 1 ? -5 * parentsDeep : 0;
   return (
     <div style={{ marginBottom: `${marginValue}px` }}>
