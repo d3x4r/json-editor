@@ -66,9 +66,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
       ? objValueInput
       : convertValueType(objValueInput, valueType as typesToConvert);
 
-    calculateResult((state: {}) =>
-      R.assocPath(prevPath.split('.'), convertedValue, state)
-    );
+    calculateResult((state: {}) => R.assocPath(prevPath.split('.'), convertedValue, state));
   };
 
   const prevPath = getPathOfProperty(parentPath, objKeyInput);
@@ -82,24 +80,13 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     const oldInputsPath = getPathOfProperty(parent, objKeyInput);
     const oldPropValue = get(calculatedData, oldInputsPath);
     calculateResult((state: {}) => {
-      const stateWithNewKey = R.assocPath(
-        currentInputsPath.split('.'),
-        oldPropValue,
-        state
-      );
+      const stateWithNewKey = R.assocPath(currentInputsPath.split('.'), oldPropValue, state);
       return R.dissocPath(oldInputsPath.split('.'), stateWithNewKey);
     });
 
     updatePreviewForm((state: {}) => {
-      const stateWithNewAddedKey = R.assocPath(
-        currentInputsPath.split('.'),
-        oldPropValue,
-        state
-      );
-      const stateWithoutDeletedKey = R.dissocPath(
-        oldInputsPath.split('.'),
-        stateWithNewAddedKey
-      );
+      const stateWithNewAddedKey = R.assocPath(currentInputsPath.split('.'), oldPropValue, state);
+      const stateWithoutDeletedKey = R.dissocPath(oldInputsPath.split('.'), stateWithNewAddedKey);
 
       return stateWithoutDeletedKey;
     });
@@ -123,22 +110,20 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     setObjValueInput(value);
   };
 
-  const onPropRemove = (parent: string, test: string) => () => {
+  const onPropRemove = (parent: string, name: string) => () => {
+    const propertyPath = [...parent.split('.'), name].filter((key) => key);
     calculateResult((state: {}) => {
-      return R.dissocPath(parent.split('.'), state);
+      return R.dissocPath(propertyPath, state);
     });
 
     updatePreviewForm((state: {}) => {
-      return R.dissocPath(parent.split('.'), state);
+      return R.dissocPath(propertyPath, state);
     });
     setRenderedKey(false);
   };
 
   const typeChanger = (
-    <ValueTypeChanger
-      defaultType={valueType}
-      setType={changeObjectPropertyType}
-    />
+    <ValueTypeChanger defaultType={valueType} setType={changeObjectPropertyType} />
   );
 
   const renderKey = () => (
@@ -149,7 +134,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
         onChange={onChangeKey}
         style={{ width: 120 }}
       />
-      <RemoveButton onRemove={onPropRemove(parent, parent)} />
+      <RemoveButton onRemove={onPropRemove(parent, objKeyInput)} />
       <span className="previewRow__splitter">:</span>
     </>
   );

@@ -12,7 +12,7 @@ const PreviewForm: React.FC<PreviewFormProps> = (props) => {
   const [previewFormState, updatePreviewForm] = useState(data);
 
   const havingData = Object.keys(previewFormState).length;
-  // console.log(previewFormState);
+
   return (
     <section className="preview-form">
       <h2 className="preview-form__title">Preview</h2>
