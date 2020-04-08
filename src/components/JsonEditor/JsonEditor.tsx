@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import PreviewRow from '../PreviewRow';
 import AddPropertyBtn from '../AddPropertyBtn';
 import * as R from 'ramda';
@@ -13,62 +13,59 @@ interface JsonEditorProps {
   updatePreviewForm: (state: {}) => void;
 }
 
+interface newObject {
+  name: string;
+  value: string;
+}
+
+const getUpdatedData = (state: {}, target: string) => {
+  return target ? get(state, target) : state;
+};
+
+const getStateWithAddedProperty = (path: string[], value: string) => (state: {}) => {
+  return R.assocPath(
+    path.filter((key) => key),
+    value,
+    state
+  );
+};
+
+const getNewObject = (): newObject => {
+  const objectId = uniqueId();
+  const name = `newKey_${objectId}`;
+  const value = `newValue_${objectId}`;
+  return { name, value };
+};
+
+const getAddedKeyPath = (parent: string, addedKey: string) => [...parent.split('.'), addedKey];
+
 const JsonEditor: React.FC<JsonEditorProps> = (props) => {
-  const {
-    data,
-    calculateResult,
-    calculatedData,
-    updatePreviewForm,
-    parent,
-  } = props;
+  const { data, calculateResult, calculatedData, updatePreviewForm, parent } = props;
 
-  const [objectToRender, updateObjectToRender] = useState(data);
-  const [testPar, setTestPar] = useState(parent);
-
-  const getUpdatedData = (target: {}) => {
-    return parent ? get(target, parent) : target;
-  };
+  const [dataToRender, updateDataToRender] = useState(data);
 
   const onAddHandler = () => {
-    console.log(parent);
-    const propertyId = uniqueId();
-    const newKeyName = `newKey_${propertyId}`;
-    const newValue = `newValue_${propertyId}`;
-    const newKeyPath = [...parent.split('.'), newKeyName];
-    const dataWithAddedProperty = R.assocPath(
-      newKeyPath.filter((key) => key),
-      newValue,
-      calculatedData
-    );
+    const { name, value } = getNewObject();
+    const addedKeyPath = getAddedKeyPath(parent, name);
+    const getUpdatedState = getStateWithAddedProperty(addedKeyPath, value);
+    const calculatedDataWithAddedProperty = getUpdatedState(calculatedData);
+    const updatedDataToRender = getUpdatedData(calculatedDataWithAddedProperty, parent);
 
-    calculateResult((state: {}) => {
-      return R.assocPath(
-        newKeyPath.filter((key) => key),
-        newValue,
-        state
-      );
-    });
-    updatePreviewForm((state: {}) => {
-      return R.assocPath(
-        newKeyPath.filter((key) => key),
-        newValue,
-        state
-      );
-    });
-    updateObjectToRender(getUpdatedData(dataWithAddedProperty));
+    calculateResult(calculatedDataWithAddedProperty);
+    updatePreviewForm((state: {}) => getUpdatedState(state));
+    updateDataToRender(updatedDataToRender);
   };
 
-  const result = Object.keys(objectToRender).map((key) => {
+  const result = Object.keys(dataToRender).map((key) => {
     return (
       <PreviewRow
         name={key}
-        value={objectToRender[key]}
+        value={dataToRender[key]}
         calculatedData={calculatedData}
         calculateResult={calculateResult}
         updatePreviewForm={updatePreviewForm}
         parent={parent}
         key={key}
-        setTestPar={setTestPar}
       />
     );
   });
