@@ -58,18 +58,16 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   const [valueType, setValueType] = useState(getValueType(objValueInput));
   const [isRenderedRow, setRenderedKey] = useState(true);
 
-  const parentPath = parent.split('.').slice(0, -1).join('.');
-
   const changeObjectPropertyType = (valueType: string) => {
     setValueType(valueType);
     const convertedValue = isObject(objValueInput)
       ? objValueInput
       : convertValueType(objValueInput, valueType as typesToConvert);
 
-    calculateResult((state: {}) => R.assocPath(prevPath.split('.'), convertedValue, state));
-  };
+    const propertyPath = [...parent.split('.'), objKeyInput].filter((key) => key);
 
-  const prevPath = getPathOfProperty(parentPath, objKeyInput);
+    calculateResult((state: {}) => R.assocPath(propertyPath, convertedValue, state));
+  };
 
   const onChangeKey = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const {
@@ -104,8 +102,10 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
       ? value
       : convertValueType(value, valueType as typesToConvert);
 
+    const propertyPath = [...parent.split('.'), objKeyInput].filter((key) => key);
+
     calculateResult((state: {}) => {
-      return R.assocPath(prevPath.split('.'), convertedValue, state);
+      return R.assocPath(propertyPath, convertedValue, state);
     });
     setObjValueInput(value);
   };
