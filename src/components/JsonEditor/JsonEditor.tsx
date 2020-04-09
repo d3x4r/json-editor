@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import PreviewRow from '../PreviewRow';
 import AddPropertyBtn from '../AddPropertyBtn';
+import AddTreeBtn from '../AddTreeBtn';
 import * as R from 'ramda';
 import uniqueId from 'lodash.uniqueid';
 import get from 'lodash.get';
+import { typesOfNodes } from '../../types';
 
 interface JsonEditorProps {
   data: { [key: string]: any };
@@ -22,12 +24,8 @@ const getUpdatedData = (state: {}, target: string) => {
   return target ? get(state, target) : state;
 };
 
-const getStateWithAddedProperty = (path: string[], value: string) => (state: {}) => {
-  return R.assocPath(
-    path.filter((key) => key),
-    value,
-    state
-  );
+const getStateWithAddedProperty = (path: string[], value: string | {} = {}) => (state: {}) => {
+  return R.assocPath(path, value, state);
 };
 
 const getNewObject = (): newObject => {
@@ -37,23 +35,32 @@ const getNewObject = (): newObject => {
   return { name, value };
 };
 
-const getAddedKeyPath = (parent: string, addedKey: string) => [...parent.split('.'), addedKey];
+const getAddedKeyPath = (parent: string, addedKey: string) =>
+  [...parent.split('.'), addedKey].filter((key) => key);
 
 const JsonEditor: React.FC<JsonEditorProps> = (props) => {
   const { data, calculateResult, calculatedData, updatePreviewForm, parent } = props;
 
   const [dataToRender, updateDataToRender] = useState(data);
 
-  const onAddHandler = () => {
-    const { name, value } = getNewObject();
-    const addedKeyPath = getAddedKeyPath(parent, name);
-    const getUpdatedState = getStateWithAddedProperty(addedKeyPath, value);
-    const calculatedDataWithAddedProperty = getUpdatedState(calculatedData);
+  const updateState = (getState: (state: {}) => {}) => {
+    const calculatedDataWithAddedProperty = getState(calculatedData);
     const updatedDataToRender = getUpdatedData(calculatedDataWithAddedProperty, parent);
 
     calculateResult(calculatedDataWithAddedProperty);
-    updatePreviewForm((state: {}) => getUpdatedState(state));
+    updatePreviewForm(getState);
     updateDataToRender(updatedDataToRender);
+  };
+
+  const onAddHandler = (nodeType: typesOfNodes) => () => {
+    const { name, value } = getNewObject();
+    const addedKeyPath = getAddedKeyPath(parent, name);
+    const getUpdatedState =
+      nodeType === 'leaf'
+        ? getStateWithAddedProperty(addedKeyPath, value)
+        : getStateWithAddedProperty(addedKeyPath);
+
+    updateState(getUpdatedState);
   };
 
   const result = Object.keys(dataToRender).map((key) => {
@@ -72,10 +79,12 @@ const JsonEditor: React.FC<JsonEditorProps> = (props) => {
   // temp reset 5px margin to nested containers
   const parentsDeep = parent.split('.').length;
   const marginValue = parent.split('.').length > 1 ? -5 * parentsDeep : 0;
+
   return (
     <div style={{ marginBottom: `${marginValue}px` }}>
       {result}
-      <AddPropertyBtn onClick={onAddHandler} />
+      <AddPropertyBtn onClick={onAddHandler('leaf')} />
+      <AddTreeBtn onClick={onAddHandler('node')} />
     </div>
   );
 };
