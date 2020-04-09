@@ -6,6 +6,8 @@ import ValueTypeChanger from '../ValueTypeChanger';
 import './PreviewRow.css';
 import { Input } from 'antd';
 import RemoveButton from '../RemoveButton';
+import { isObject, getValueType, convertValueType } from '../../utils';
+import { typesToConvert } from '../../types';
 
 interface PreviewRowProps {
   name: string;
@@ -16,31 +18,23 @@ interface PreviewRowProps {
   updatePreviewForm: (state: {}) => void;
 }
 
-type typesToConvert = 'string' | 'number' | 'boolean' | 'array';
-
 const getPathOfProperty = (parentPath: string, property: string) =>
   parentPath ? `${parentPath}.${property}` : property;
 
-const isObject = (item: any) => {
-  return item instanceof Object && !(item instanceof Array);
+const getArrayOfPathParts = (path: string, propertyName: string = ''): Array<string> => {
+  return [...path.split('.'), propertyName].filter((key) => key);
 };
 
-const isArray = (item: any) => {
-  return item instanceof Object && item instanceof Array;
+const getUpdatedState = (
+  addedPathOfValue: Array<string>,
+  addedValue: any,
+  oldPathOfValue: Array<string>
+) => (state: {}) => {
+  const stateWithNewKey = R.assocPath(addedPathOfValue, addedValue, state);
+  return R.dissocPath(oldPathOfValue, stateWithNewKey);
 };
 
-const getValueType = (item: any) => (isArray(item) ? 'array' : typeof item);
-
-const converters = {
-  string: (value: any) => String(value),
-  number: (value: any) => Number(value),
-  boolean: (value: any) => Boolean(value),
-  array: (value: any) => String(value).split(','),
-};
-
-const convertValueType = (value: any, type: typesToConvert): any => {
-  return converters[type](value);
-};
+const getStateWithRemovedKey = (path: Array<string>) => (state: {}) => R.dissocPath(path, state);
 
 const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   const {
@@ -58,15 +52,12 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   const [valueType, setValueType] = useState(getValueType(objValueInput));
   const [isRenderedRow, setRenderedKey] = useState(true);
 
-  const changeObjectPropertyType = (valueType: string) => {
+  const changeObjectPropertyType = (valueType: typesToConvert) => {
     setValueType(valueType);
-    const convertedValue = isObject(objValueInput)
-      ? objValueInput
-      : convertValueType(objValueInput, valueType as typesToConvert);
+    const propertyPathParts = getArrayOfPathParts(parent, objKeyInput);
+    const convertedValue = convertValueType(objValueInput, valueType);
 
-    const propertyPath = [...parent.split('.'), objKeyInput].filter((key) => key);
-
-    calculateResult((state: {}) => R.assocPath(propertyPath, convertedValue, state));
+    calculateResult((state: {}) => R.assocPath(propertyPathParts, convertedValue, state));
   };
 
   const onChangeKey = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,22 +65,21 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
       target: { value },
     } = evt;
 
-    const currentInputsPath = getPathOfProperty(parent, value);
-    const oldInputsPath = getPathOfProperty(parent, objKeyInput);
-    const oldPropValue = get(calculatedData, oldInputsPath);
-    calculateResult((state: {}) => {
-      const stateWithNewKey = R.assocPath(currentInputsPath.split('.'), oldPropValue, state);
-      return R.dissocPath(oldInputsPath.split('.'), stateWithNewKey);
-    });
+    const currentKeyPath = getPathOfProperty(parent, value);
+    const prevInputPath = getPathOfProperty(parent, objKeyInput);
+    const propertyValue = get(calculatedData, prevInputPath);
+    const arrayOfCurrentInputParents = getArrayOfPathParts(currentKeyPath);
+    const arrayOfPrevInputParents = getArrayOfPathParts(prevInputPath);
 
-    updatePreviewForm((state: {}) => {
-      const stateWithNewAddedKey = R.assocPath(currentInputsPath.split('.'), oldPropValue, state);
-      const stateWithoutDeletedKey = R.dissocPath(oldInputsPath.split('.'), stateWithNewAddedKey);
+    const updateState = getUpdatedState(
+      arrayOfCurrentInputParents,
+      propertyValue,
+      arrayOfPrevInputParents
+    );
 
-      return stateWithoutDeletedKey;
-    });
-
-    savePropValue(oldPropValue);
+    calculateResult(updateState);
+    updatePreviewForm(updateState);
+    savePropValue(propertyValue);
     setObjKeyInput(value);
   };
 
@@ -98,32 +88,27 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
       target: { value },
     } = evt;
 
-    const convertedValue = isObject(value)
-      ? value
-      : convertValueType(value, valueType as typesToConvert);
+    const convertedValue = convertValueType(value, valueType as typesToConvert);
+    const arrayOfPropertyPaths = getArrayOfPathParts(parent, objKeyInput);
 
-    const propertyPath = [...parent.split('.'), objKeyInput].filter((key) => key);
-
-    calculateResult((state: {}) => {
-      return R.assocPath(propertyPath, convertedValue, state);
-    });
+    calculateResult((state: {}) => R.assocPath(arrayOfPropertyPaths, convertedValue, state));
     setObjValueInput(value);
   };
 
   const onPropRemove = (parent: string, name: string) => () => {
-    const propertyPath = [...parent.split('.'), name].filter((key) => key);
-    calculateResult((state: {}) => {
-      return R.dissocPath(propertyPath, state);
-    });
+    const arrayOfPropertyPaths = getArrayOfPathParts(parent, name);
+    const removeProp = getStateWithRemovedKey(arrayOfPropertyPaths);
 
-    updatePreviewForm((state: {}) => {
-      return R.dissocPath(propertyPath, state);
-    });
+    calculateResult(removeProp);
+    updatePreviewForm(removeProp);
     setRenderedKey(false);
   };
 
   const typeChanger = (
-    <ValueTypeChanger defaultType={valueType} setType={changeObjectPropertyType} />
+    <ValueTypeChanger
+      defaultType={valueType as typesToConvert}
+      setType={changeObjectPropertyType}
+    />
   );
 
   const renderKey = () => (
@@ -147,7 +132,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
           calculateResult={calculateResult}
           calculatedData={calculatedData}
           updatePreviewForm={updatePreviewForm}
-          parent={parent ? `${parent}.${objKeyInput}` : objKeyInput}
+          parent={getPathOfProperty(parent, objKeyInput)}
         />
       ) : (
         <Input

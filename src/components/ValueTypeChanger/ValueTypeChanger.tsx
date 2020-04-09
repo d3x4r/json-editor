@@ -1,18 +1,16 @@
 import React from 'react';
 import { Select } from 'antd';
 import './ValueTypeChanger.css';
+import { typesToConvert } from '../../types';
 
 const { Option } = Select;
 
 interface ValueTypeChanger {
-  defaultType: string;
-  setType: (value: string) => void;
+  defaultType: typesToConvert;
+  setType: (value: typesToConvert) => void;
 }
 
-const ValueTypeChanger: React.FC<ValueTypeChanger> = ({
-  defaultType,
-  setType
-}) => {
+const ValueTypeChanger: React.FC<ValueTypeChanger> = ({ defaultType, setType }) => {
   return (
     <Select
       className="value-type-changer"
