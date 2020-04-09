@@ -76,12 +76,9 @@ const JsonEditor: React.FC<JsonEditorProps> = (props) => {
       />
     );
   });
-  // temp reset 5px margin to nested containers
-  const parentsDeep = parent.split('.').length;
-  const marginValue = parent.split('.').length > 1 ? -5 * parentsDeep : 0;
 
   return (
-    <div style={{ marginBottom: `${marginValue}px` }}>
+    <div>
       {result}
       <AddPropertyBtn onClick={onAddHandler('leaf')} />
       <AddTreeBtn onClick={onAddHandler('node')} />
