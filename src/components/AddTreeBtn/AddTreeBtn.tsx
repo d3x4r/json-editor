@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'antd';
 
 interface AddTreeBtnProps {
   onClick: () => void;
@@ -6,7 +7,11 @@ interface AddTreeBtnProps {
 
 const AddTreeBtn: React.FC<AddTreeBtnProps> = (props) => {
   const { onClick } = props;
-  return <button onClick={onClick}>Add Tree</button>;
+  return (
+    <Button onClick={onClick} size="small" shape="round" style={{ borderColor: '#3f6600' }}>
+      Add Tree
+    </Button>
+  );
 };
 
 export default AddTreeBtn;

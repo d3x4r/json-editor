@@ -25,7 +25,7 @@ const App: React.FC = () => {
       </Header>
       <Content style={{ padding: '25px 75px' }}>
         <Row gutter={[8, 8]}>
-          <Col span={5}>
+          <Col span={4}>
             <DataForm updateEditorData={updateDataToRender} />
           </Col>
           <Col span={14}>
@@ -36,7 +36,7 @@ const App: React.FC = () => {
               dataToRender={dataToRender}
             />
           </Col>
-          <Col span={5}>
+          <Col span={6}>
             <Result data={dataToRender} />
           </Col>
         </Row>
