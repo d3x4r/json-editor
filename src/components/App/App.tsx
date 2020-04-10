@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageHeader from '../Header';
 import DataForm from '../DataForm';
 import PreviewForm from '../PreviewForm';
@@ -8,21 +8,16 @@ import { Row, Col } from 'antd';
 
 const { Header, Content } = Layout;
 
-// const exampleJSON =
-//   '{ "name": "John", "age": 35, "isAdmin": false, "friends": [0,1,2,3], "data": { "name": "John1", "age": 25, "isAdmin": true, "friends": [0,1,2,3], "nestedData1": { "name": "John2", "age": 15, "isAdmin": true, "friends": [0,1,2,3] } }, "testKey1": "testValue1", "testKey2": "testValue2", "testKey3": [1,2,3] }';
-
-const exampleJSON =
-  '{"name":"John","age":35,"isAdmin":false,"friends":[0,1,2,3],"data":{"name":"John1","age":25,"isAdmin":true,"friends":[0,1,2,3],"nestedData1":{"name":"John2","age":15,"isAdmin":true,"friends":[0,1,2,3],"nestedData2":{"name":"John3","age":25,"isAdmin":false,"friends":[0,1,2,3,5]}}},"testKey1":"testValue1","testKey2":"testValue2","testKey3":[1,2,3]}';
-
 const App: React.FC = () => {
-  const [data, setData] = useState(exampleJSON);
-  const [previewData, setPreviewData] = useState(JSON.parse(data));
+  const [dataToRender, updateDataToRender] = useState({});
 
-  const transformData = (stringData: string) => {
-    const objData = JSON.parse(stringData);
-    setPreviewData(objData);
-  };
+  const [editorState, updateEditorState] = useState(dataToRender);
 
+  useEffect(() => {
+    updateEditorState((state: {}) => {
+      return dataToRender;
+    });
+  }, [dataToRender]);
   return (
     <Layout className="layout">
       <Header>
@@ -31,17 +26,18 @@ const App: React.FC = () => {
       <Content style={{ padding: '25px 75px' }}>
         <Row gutter={[8, 8]}>
           <Col span={5}>
-            <DataForm
-              currentValue={data}
-              setValue={setData}
-              transformData={transformData}
-            />
+            <DataForm updateEditorData={updateDataToRender} />
           </Col>
           <Col span={14}>
-            <PreviewForm data={previewData} calculateResult={setPreviewData} />
+            <PreviewForm
+              data={editorState}
+              calculateResult={updateDataToRender}
+              updateEditorState={updateEditorState}
+              dataToRender={dataToRender}
+            />
           </Col>
           <Col span={5}>
-            <Result data={previewData} />
+            <Result data={dataToRender} />
           </Col>
         </Row>
       </Content>

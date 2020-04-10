@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import JsonEditor from '../JsonEditor';
 import './PreviewForm.css';
 
 type PreviewFormProps = {
   data: {};
   calculateResult: (state: {}) => void;
+  updateEditorState: (state: {}) => void;
+  dataToRender: {};
 };
 
 const PreviewForm: React.FC<PreviewFormProps> = (props) => {
-  const { data, calculateResult } = props;
-  const [previewFormState, updatePreviewForm] = useState(data);
+  const { data, calculateResult, updateEditorState, dataToRender } = props;
 
-  const havingData = Object.keys(previewFormState).length;
+  const havingData = Object.keys(data).length;
 
   return (
     <section className="preview-form">
@@ -19,10 +20,10 @@ const PreviewForm: React.FC<PreviewFormProps> = (props) => {
       <div className="preview-form__result">
         {havingData ? (
           <JsonEditor
-            data={previewFormState}
-            calculatedData={data}
+            data={data}
+            calculatedData={dataToRender}
             calculateResult={calculateResult}
-            updatePreviewForm={updatePreviewForm}
+            updatePreviewForm={updateEditorState}
             parent=""
           />
         ) : (

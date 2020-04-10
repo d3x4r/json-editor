@@ -1,25 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, Input, Button } from 'antd';
 
 const { TextArea } = Input;
 
 type DataFormProps = {
-  currentValue: string;
-  setValue: (value: string) => void;
-  transformData: (value: string) => void;
+  updateEditorData: (state: {}) => void;
 };
 
 const DataForm: React.FC<DataFormProps> = (props) => {
-  const { currentValue, setValue, transformData } = props;
+  const { updateEditorData } = props;
+  const [inputValue, updateInputValue] = useState('');
 
   const onFormSubmit = () => {
-    transformData(currentValue);
-    setValue('');
+    const objData = JSON.parse(inputValue);
+    updateEditorData(objData);
+    updateInputValue('');
   };
 
-  const onDataEdit = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const updatedVaule = evt.target.value;
-    setValue(updatedVaule);
+  const onChangeHandler = (evt: React.ChangeEvent<HTMLTextAreaElement>) => {
+    updateInputValue(evt.target.value);
   };
 
   return (
@@ -27,7 +26,7 @@ const DataForm: React.FC<DataFormProps> = (props) => {
       <h2 className="data-form__title">Enter data</h2>
       <Form onFinish={onFormSubmit}>
         <Form.Item>
-          <TextArea rows={12} value={currentValue} onChange={onDataEdit} />
+          <TextArea rows={12} value={inputValue} onChange={onChangeHandler} />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
