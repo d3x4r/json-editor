@@ -15,6 +15,7 @@ const DataForm: React.FC<DataFormProps> = (props) => {
 
   const onFormSubmit = () => {
     const objData = JSON.parse(inputValue);
+    updateEditorData({});
     updateEditorData(objData);
     updateInputValue('');
   };

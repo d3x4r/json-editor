@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import JsonEditor from '../JsonEditor';
 import * as R from 'ramda';
 import get from 'lodash.get';
@@ -6,8 +6,9 @@ import ValueTypeChanger from '../ValueTypeChanger';
 import './PreviewRow.css';
 import { Input } from 'antd';
 import RemoveButton from '../RemoveButton';
+import AddPropMenu from '../AddPropMenu';
 import { isObject, getValueType, convertValueType } from '../../utils';
-import { typesToConvert } from '../../types';
+import { typesToConvert, typesOfNodes } from '../../types';
 
 interface PreviewRowProps {
   name: string;
@@ -16,6 +17,7 @@ interface PreviewRowProps {
   parent: string;
   calculateResult: (state: {}) => void;
   updatePreviewForm: (state: {}) => void;
+  onAddHandler: (parent: string) => (nodeType: typesOfNodes) => void;
 }
 
 const getPathOfProperty = (parentPath: string, property: string) =>
@@ -23,15 +25,6 @@ const getPathOfProperty = (parentPath: string, property: string) =>
 
 const getArrayOfPathParts = (path: string, propertyName: string = ''): Array<string> => {
   return [...path.split('.'), propertyName].filter((key) => key);
-};
-
-const getUpdatedState = (
-  addedPathOfValue: Array<string>,
-  addedValue: any,
-  oldPathOfValue: Array<string>
-) => (state: {}) => {
-  const stateWithNewKey = R.assocPath(addedPathOfValue, addedValue, state);
-  return R.dissocPath(oldPathOfValue, stateWithNewKey);
 };
 
 const getStateWithRemovedKey = (path: Array<string>) => (state: {}) => R.dissocPath(path, state);
@@ -44,6 +37,7 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     calculateResult,
     updatePreviewForm,
     parent,
+    onAddHandler,
   } = props;
 
   const [objKeyInput, setObjKeyInput] = useState(name);
@@ -51,6 +45,12 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   const [objValueInput, setObjValueInput] = useState(objValue);
   const [valueType, setValueType] = useState(getValueType(objValueInput));
   const [isRenderedRow, setRenderedKey] = useState(true);
+  const [isInvalid, setInvalid] = useState(false);
+
+  useEffect(() => {
+    savePropValue(objValue);
+    setObjValueInput(objValue);
+  }, [objValue]);
 
   const changeObjectPropertyType = (valueType: typesToConvert) => {
     setValueType(valueType);
@@ -65,22 +65,31 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
       target: { value },
     } = evt;
 
+    setObjKeyInput(value);
+
     const currentKeyPath = getPathOfProperty(parent, value);
     const prevInputPath = getPathOfProperty(parent, objKeyInput);
     const propertyValue = get(calculatedData, prevInputPath);
     const arrayOfCurrentInputParents = getArrayOfPathParts(currentKeyPath);
     const arrayOfPrevInputParents = getArrayOfPathParts(prevInputPath);
 
-    const updateState = getUpdatedState(
-      arrayOfCurrentInputParents,
-      propertyValue,
-      arrayOfPrevInputParents
-    );
+    const alreadyAddedToResult = get(calculatedData, currentKeyPath);
 
-    calculateResult(updateState);
-    updatePreviewForm(updateState);
-    savePropValue(propertyValue);
-    setObjKeyInput(value);
+    if (value.length === 0 || alreadyAddedToResult) {
+      setInvalid(true);
+      calculateResult((state: {}) => R.dissocPath(arrayOfPrevInputParents, state));
+      savePropValue(propertyValue);
+    } else if (!isInvalid) {
+      calculateResult((state: {}) => {
+        const stateWithNewKey = R.assocPath(arrayOfCurrentInputParents, propertyValue, state);
+        return R.dissocPath(arrayOfPrevInputParents, stateWithNewKey);
+      });
+    } else {
+      calculateResult((state: {}) =>
+        R.assocPath(arrayOfCurrentInputParents, savedPropValue, state)
+      );
+      setInvalid(false);
+    }
   };
 
   const onChangeValue = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -98,9 +107,12 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
   const onPropRemove = (parent: string, name: string) => () => {
     const arrayOfPropertyPaths = getArrayOfPathParts(parent, name);
     const removeProp = getStateWithRemovedKey(arrayOfPropertyPaths);
-
+    /* 
+        const updatedState = R.dissocPath(arrayOfPropertyPaths, calculatedData);
+        calculateResult(updatedState);
+        updatePreviewForm(updatedState);
+    */
     calculateResult(removeProp);
-    updatePreviewForm(removeProp);
     setRenderedKey(false);
   };
 
@@ -108,43 +120,58 @@ const PreviewRow: React.FC<PreviewRowProps> = (props) => {
     <ValueTypeChanger
       defaultType={valueType as typesToConvert}
       setType={changeObjectPropertyType}
+      disabled={isInvalid}
     />
   );
-
+  const classNames = isInvalid ? 'previewRow__key--invalid' : 'previewRow__key';
   const renderKey = () => (
-    <>
+    <div className="previewRow__key-wrapper">
       <Input
-        className="previewRow__key"
+        className={classNames}
         value={objKeyInput}
         onChange={onChangeKey}
         style={{ width: 120 }}
       />
-      <RemoveButton onRemove={onPropRemove(parent, objKeyInput)} />
-      <span className="previewRow__splitter">:</span>
-    </>
-  );
-
-  const renderProperty = () => (
-    <>
-      {isObject(savedPropValue) ? (
-        <JsonEditor
-          data={savedPropValue}
-          calculateResult={calculateResult}
-          calculatedData={calculatedData}
-          updatePreviewForm={updatePreviewForm}
-          parent={getPathOfProperty(parent, objKeyInput)}
-        />
-      ) : (
-        <Input
-          value={objValueInput}
-          onChange={onChangeValue}
-          style={{ width: 220 }}
-          addonAfter={typeChanger}
-        />
+      {isObject(savedPropValue) && (
+        <AddPropMenu onAddHandler={onAddHandler(`${parent}.${objKeyInput}`)} disabled={isInvalid} />
       )}
-    </>
+      <RemoveButton onRemove={onPropRemove(parent, objKeyInput)} disabled={isInvalid} />
+      <span className="previewRow__splitter">:</span>
+    </div>
   );
 
+  const renderProperty = () => {
+    if (isObject(savedPropValue)) {
+      return (
+        <div className="preview-row__editor-wrapper">
+          <span className="preview-form__object-brackets preview-form__object-brackets--open">
+            {'{'}
+          </span>
+          <JsonEditor
+            data={savedPropValue}
+            calculateResult={calculateResult}
+            calculatedData={calculatedData}
+            updatePreviewForm={updatePreviewForm}
+            parent={getPathOfProperty(parent, objKeyInput)}
+            onAddProperty={onAddHandler}
+          />
+          <span className="preview-form__object-brackets preview-form__object-brackets--close">
+            {'}'}
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <Input
+        value={objValueInput}
+        onChange={onChangeValue}
+        style={{ width: 220 }}
+        addonAfter={typeChanger}
+        disabled={isInvalid}
+      />
+    );
+  };
   const renderRow = () => (
     <div className="previewRow">
       {renderKey()}

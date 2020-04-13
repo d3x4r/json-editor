@@ -13,11 +13,17 @@ const App: React.FC = () => {
 
   const [editorState, updateEditorState] = useState(dataToRender);
 
+  const [dataToView, setDataToView] = useState(dataToRender);
+
   useEffect(() => {
     updateEditorState((state: {}) => {
       return dataToRender;
     });
+    setDataToView((state: {}) => {
+      return dataToRender;
+    });
   }, [dataToRender]);
+
   return (
     <Layout className="layout">
       <Header>
@@ -31,13 +37,13 @@ const App: React.FC = () => {
           <Col span={14}>
             <PreviewForm
               data={editorState}
-              calculateResult={updateDataToRender}
+              calculateResult={setDataToView}
               updateEditorState={updateEditorState}
-              dataToRender={dataToRender}
+              dataToRender={dataToView}
             />
           </Col>
           <Col span={6}>
-            <Result data={dataToRender} />
+            <Result data={dataToView} />
           </Col>
         </Row>
       </Content>

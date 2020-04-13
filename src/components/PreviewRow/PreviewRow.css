@@ -2,7 +2,7 @@
   display: flex;
   align-items: flex-start;
 
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .previewRow__splitter {
@@ -14,6 +14,18 @@
   margin-top: 5px;
 }
 
-/* .previewRow * .previewRow {
-  margin-bottom: 0;
-} */
+.previewRow__key--invalid {
+  background-color: red !important;
+}
+
+.preview-row__editor-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+
+  align-items: flex-start;
+}
+
+.previewRow__key-wrapper {
+  display: flex;
+  align-items: flex-start;
+}
