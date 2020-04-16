@@ -33,17 +33,23 @@ const DataForm: React.FC<DataFormProps> = (props) => {
   return (
     <section className="data-form">
       <h2 className="data-form__title">Enter data</h2>
-      <Form onFinish={onFormSubmit}>
+      <Form data-testid="data-form" onFinish={onFormSubmit}>
         <Form.Item>
           <TextArea
             rows={12}
             value={inputValue}
             onChange={onChangeHandler}
             placeholder="enter data in json format"
+            data-testid="data-form-textarea"
           />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit" disabled={inputValue.length === 0}>
+          <Button
+            type="primary"
+            htmlType="submit"
+            disabled={inputValue.length === 0}
+            data-testid="form-data-submit"
+          >
             Render Preview
           </Button>
           <Button type="default" onClick={() => updateInputValue(JSONexample)}>
