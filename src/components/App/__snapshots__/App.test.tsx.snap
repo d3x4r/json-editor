@@ -17,11 +17,16 @@ Object {
             <div
               class="ant-page-header-heading"
             >
-              <span
-                class="ant-page-header-heading-title"
+              <div
+                class="ant-page-header-heading-left"
               >
-                JSON editor
-              </span>
+                <span
+                  class="ant-page-header-heading-title"
+                  title="JSON editor"
+                >
+                  JSON editor
+                </span>
+              </div>
             </div>
           </div>
         </header>
@@ -190,11 +195,16 @@ Object {
           <div
             class="ant-page-header-heading"
           >
-            <span
-              class="ant-page-header-heading-title"
+            <div
+              class="ant-page-header-heading-left"
             >
-              JSON editor
-            </span>
+              <span
+                class="ant-page-header-heading-title"
+                title="JSON editor"
+              >
+                JSON editor
+              </span>
+            </div>
           </div>
         </div>
       </header>
