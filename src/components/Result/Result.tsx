@@ -18,7 +18,9 @@ const Result: React.FC<ResultProps> = ({ data }) => {
           <Switch onChange={() => setMinify(!minify)} />
         </div>
       </div>
-      {minify ? <p>{result}</p> : <pre>{result}</pre>}
+      <div className="result-container" data-testid="result-container">
+        {minify ? <p>{result}</p> : <pre>{result}</pre>}
+      </div>
     </section>
   );
 };

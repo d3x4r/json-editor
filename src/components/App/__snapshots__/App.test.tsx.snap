@@ -1,0 +1,404 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test app render 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <section
+        class="ant-layout layout"
+      >
+        <header
+          class="ant-layout-header"
+        >
+          <div
+            class="ant-page-header header ant-page-header-ghost"
+          >
+            <div
+              class="ant-page-header-heading"
+            >
+              <span
+                class="ant-page-header-heading-title"
+              >
+                JSON editor
+              </span>
+            </div>
+          </div>
+        </header>
+        <main
+          class="ant-layout-content"
+          style="padding: 25px 75px;"
+        >
+          <div
+            class="ant-row"
+            style="margin: -4px -4px 4px -4px;"
+          >
+            <div
+              class="ant-col ant-col-4"
+              style="padding: 4px 4px 4px 4px;"
+            >
+              <section
+                class="data-form"
+              >
+                <h2
+                  class="data-form__title"
+                >
+                  Enter data
+                </h2>
+                <form
+                  class="ant-form ant-form-horizontal"
+                  data-testid="data-form"
+                >
+                  <div
+                    class="ant-row ant-form-item"
+                  >
+                    <div
+                      class="ant-col ant-form-item-control"
+                    >
+                      <div
+                        class="ant-form-item-control-input"
+                      >
+                        <div
+                          class="ant-form-item-control-input-content"
+                        >
+                          <textarea
+                            class="ant-input"
+                            data-testid="data-form-textarea"
+                            placeholder="enter data in json format"
+                            rows="12"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="ant-row ant-form-item"
+                  >
+                    <div
+                      class="ant-col ant-form-item-control"
+                    >
+                      <div
+                        class="ant-form-item-control-input"
+                      >
+                        <div
+                          class="ant-form-item-control-input-content"
+                        >
+                          <button
+                            class="ant-btn ant-btn-primary"
+                            data-testid="form-data-submit"
+                            disabled=""
+                            type="submit"
+                          >
+                            <span>
+                              Render Preview
+                            </span>
+                          </button>
+                          <button
+                            class="ant-btn ant-btn-default"
+                            type="button"
+                          >
+                            <span>
+                              Paste Example
+                            </span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              </section>
+            </div>
+            <div
+              class="ant-col ant-col-14"
+              style="padding: 4px 4px 4px 4px;"
+            >
+              <section
+                class="preview-form"
+              >
+                <h2
+                  class="preview-form__title"
+                >
+                  Preview
+                </h2>
+                <div
+                  class="preview-form__result"
+                >
+                  <p
+                    class="preview-form__message"
+                  >
+                    No data to render
+                  </p>
+                </div>
+              </section>
+            </div>
+            <div
+              class="ant-col ant-col-6"
+              style="padding: 4px 4px 4px 4px;"
+            >
+              <section
+                class="preview-form"
+              >
+                <div
+                  class="preview-form__header"
+                >
+                  <h2
+                    class="preview-form__title"
+                  >
+                    Result
+                  </h2>
+                  <div>
+                    <span>
+                      Minify: 
+                    </span>
+                    <button
+                      aria-checked="false"
+                      class="ant-switch"
+                      role="switch"
+                      type="button"
+                    >
+                      <span
+                        class="ant-switch-inner"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="result-container"
+                  data-testid="result-container"
+                >
+                  <pre>
+                    {}
+                  </pre>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </section>
+    </div>
+  </body>,
+  "container": <div>
+    <section
+      class="ant-layout layout"
+    >
+      <header
+        class="ant-layout-header"
+      >
+        <div
+          class="ant-page-header header ant-page-header-ghost"
+        >
+          <div
+            class="ant-page-header-heading"
+          >
+            <span
+              class="ant-page-header-heading-title"
+            >
+              JSON editor
+            </span>
+          </div>
+        </div>
+      </header>
+      <main
+        class="ant-layout-content"
+        style="padding: 25px 75px;"
+      >
+        <div
+          class="ant-row"
+          style="margin: -4px -4px 4px -4px;"
+        >
+          <div
+            class="ant-col ant-col-4"
+            style="padding: 4px 4px 4px 4px;"
+          >
+            <section
+              class="data-form"
+            >
+              <h2
+                class="data-form__title"
+              >
+                Enter data
+              </h2>
+              <form
+                class="ant-form ant-form-horizontal"
+                data-testid="data-form"
+              >
+                <div
+                  class="ant-row ant-form-item"
+                >
+                  <div
+                    class="ant-col ant-form-item-control"
+                  >
+                    <div
+                      class="ant-form-item-control-input"
+                    >
+                      <div
+                        class="ant-form-item-control-input-content"
+                      >
+                        <textarea
+                          class="ant-input"
+                          data-testid="data-form-textarea"
+                          placeholder="enter data in json format"
+                          rows="12"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="ant-row ant-form-item"
+                >
+                  <div
+                    class="ant-col ant-form-item-control"
+                  >
+                    <div
+                      class="ant-form-item-control-input"
+                    >
+                      <div
+                        class="ant-form-item-control-input-content"
+                      >
+                        <button
+                          class="ant-btn ant-btn-primary"
+                          data-testid="form-data-submit"
+                          disabled=""
+                          type="submit"
+                        >
+                          <span>
+                            Render Preview
+                          </span>
+                        </button>
+                        <button
+                          class="ant-btn ant-btn-default"
+                          type="button"
+                        >
+                          <span>
+                            Paste Example
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </section>
+          </div>
+          <div
+            class="ant-col ant-col-14"
+            style="padding: 4px 4px 4px 4px;"
+          >
+            <section
+              class="preview-form"
+            >
+              <h2
+                class="preview-form__title"
+              >
+                Preview
+              </h2>
+              <div
+                class="preview-form__result"
+              >
+                <p
+                  class="preview-form__message"
+                >
+                  No data to render
+                </p>
+              </div>
+            </section>
+          </div>
+          <div
+            class="ant-col ant-col-6"
+            style="padding: 4px 4px 4px 4px;"
+          >
+            <section
+              class="preview-form"
+            >
+              <div
+                class="preview-form__header"
+              >
+                <h2
+                  class="preview-form__title"
+                >
+                  Result
+                </h2>
+                <div>
+                  <span>
+                    Minify: 
+                  </span>
+                  <button
+                    aria-checked="false"
+                    class="ant-switch"
+                    role="switch"
+                    type="button"
+                  >
+                    <span
+                      class="ant-switch-inner"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div
+                class="result-container"
+                data-testid="result-container"
+              >
+                <pre>
+                  {}
+                </pre>
+              </div>
+            </section>
+          </div>
+        </div>
+      </main>
+    </section>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
+`;
