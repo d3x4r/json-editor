@@ -1,10 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import DataForm from './DataForm';
-import '@testing-library/jest-dom/extend-expect';
-import definePropertyMatchMedia from './matchMedia.mock';
-
-definePropertyMatchMedia();
 
 it('Test form data initial state', () => {
   const { getByTestId } = render(<DataForm updateEditorData={() => {}} />);

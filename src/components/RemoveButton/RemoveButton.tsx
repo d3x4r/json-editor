@@ -4,7 +4,7 @@ import { DeleteOutlined } from '@ant-design/icons';
 
 interface RemoveButtonProps {
   onRemove: () => void;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 const RemoveButton: React.FC<RemoveButtonProps> = ({ onRemove, disabled }) => {
@@ -14,6 +14,7 @@ const RemoveButton: React.FC<RemoveButtonProps> = ({ onRemove, disabled }) => {
       icon={<DeleteOutlined style={{ color: 'red' }} />}
       title="remove property"
       disabled={disabled}
+      data-testid="removeProp-button"
     ></Button>
   );
 };

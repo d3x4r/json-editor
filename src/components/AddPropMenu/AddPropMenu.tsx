@@ -7,7 +7,7 @@ import { typesOfNodes } from '../../types';
 
 interface AddPropMenuProps {
   onAddHandler: (type: typesOfNodes) => void;
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 const AddPropMenu: React.FC<AddPropMenuProps> = (props) => {
@@ -17,14 +17,17 @@ const AddPropMenu: React.FC<AddPropMenuProps> = (props) => {
   };
 
   const menu = (
-    <Menu onClick={onClickHandler}>
+    <Menu onClick={onClickHandler} data-testid="addProp-button__submenu">
       <Menu.Item key="node">node</Menu.Item>
       <Menu.Item key="leaf">leaf</Menu.Item>
     </Menu>
   );
   return (
     <Dropdown overlay={menu} trigger={['click']} disabled={disabled}>
-      <Button icon={<PlusOutlined style={{ color: '#5b8c00' }} />}></Button>
+      <Button
+        icon={<PlusOutlined style={{ color: '#5b8c00' }} />}
+        data-testid="addProp-button"
+      ></Button>
     </Dropdown>
   );
 };
