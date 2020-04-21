@@ -8,14 +8,14 @@ import { Collapse } from 'antd';
 const { Panel } = Collapse;
 
 const Alert: React.FC = () => {
-  const { message, visible, type, setVisible } = useContext(alertContext);
+  const { message, visible, type, setVisible, closable = true } = useContext(alertContext);
 
   if (!visible) {
     return null;
   }
 
   const CollapseContainer = (
-    <Collapse defaultActiveKey={['1']} bordered={false}>
+    <Collapse defaultActiveKey={['1']} bordered={false} style={{ backgroundColor: 'inherit' }}>
       <Panel header="Show" key="1">
         {message}
       </Panel>
@@ -28,8 +28,9 @@ const Alert: React.FC = () => {
         description={CollapseContainer}
         type={type}
         showIcon
-        closable
-        afterClose={() => setVisible('error', 'gg', false)}
+        closable={closable}
+        afterClose={() => setVisible('error', 'error message', false)}
+        data-testid="alert"
       />
     </div>
   );

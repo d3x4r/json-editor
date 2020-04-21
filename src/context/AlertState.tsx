@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import alertContext from './alertContext';
 import { alertTypes } from './alertContext';
 
-interface initialStateInterface {
+export interface initialStateInterface {
   message: string;
   type: alertTypes;
   visible: boolean;
