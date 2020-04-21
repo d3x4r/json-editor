@@ -10,15 +10,11 @@ script:
 notifications:
   email: false
 
-cache:
-  directories:
-    - node_modules
-
-  deploy:
-    provider: pages
-    skip_cleanup: true
-    github_token: $GITHUB_TOKEN
-    keep_history: true
-    local_dir: build
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_TOKEN
+  keep_history: true
+  local_dir: build
   on:
     branch: master
