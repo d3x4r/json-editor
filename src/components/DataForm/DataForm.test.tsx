@@ -1,32 +1,77 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
-import DataForm from './DataForm';
+import { render, fireEvent, wait } from '@testing-library/react';
+import { Default, WithAlert } from './DataForm.stories';
+import { JSONexample } from './DataForm';
+import addons, { mockChannel } from '@storybook/addons';
 
-it('Test form data initial state', () => {
-  const { getByTestId } = render(<DataForm updateEditorData={() => {}} />);
-  const submitButton = getByTestId('form-data-submit');
-  const textArea = getByTestId('data-form-textarea');
-  // disabled as default
-  expect(submitButton).toBeDisabled();
-  // havent value as default
-  expect(textArea).toHaveTextContent('');
+addons.setChannel(mockChannel());
+
+it('initial form test', () => {
+  const { getByText, getByPlaceholderText } = render(<Default />);
+  expect(getByPlaceholderText('enter data in json format')).toHaveValue('');
+  expect(getByText('Render Preview')).toBeDisabled();
 });
 
-it('Test change input state', () => {
-  const { getByTestId } = render(<DataForm updateEditorData={() => {}} />);
-  const textArea = getByTestId('data-form-textarea');
-
-  fireEvent.change(textArea, { target: { value: 'users input data' } });
-  expect(textArea).toHaveTextContent('users input data');
+it('submit form test', async () => {
+  const { getByTestId, getByPlaceholderText } = render(<Default />);
+  fireEvent.change(getByPlaceholderText('enter data in json format'), { target: { value: '123' } });
+  expect(getByPlaceholderText('enter data in json format')).toHaveValue('123');
+  fireEvent.click(getByTestId('form-data-submit'));
+  await wait(() => {
+    // clear after submit
+    expect(getByPlaceholderText('enter data in json format')).toHaveValue('');
+  });
+  expect(getByTestId('form-data-submit')).toBeDisabled();
 });
 
-it('Test disabled submit after clear data', () => {
-  const { getByTestId } = render(<DataForm updateEditorData={() => {}} />);
-  const submitButton = getByTestId('form-data-submit');
-  const textArea = getByTestId('data-form-textarea');
+it('example button test', async () => {
+  const { getByTestId, getByPlaceholderText } = render(<Default />);
+  fireEvent.click(getByTestId('form-data-example'));
+  expect(getByPlaceholderText('enter data in json format')).toHaveValue(JSONexample);
+  fireEvent.click(getByTestId('form-data-submit'));
+  await wait(() => {
+    // clear after submit
+    expect(getByPlaceholderText('enter data in json format')).toHaveValue('');
+  });
+});
 
-  fireEvent.change(textArea, { target: { value: 'users input data' } });
-  expect(textArea).toHaveTextContent('users input data');
-  fireEvent.change(textArea, { target: { value: '' } });
-  expect(submitButton).toBeDisabled();
+it('form callback test', async () => {
+  const onFormSubmitHandler = jest.fn();
+  const { getByTestId } = render(<WithAlert onFormSubmit={onFormSubmitHandler} />);
+  fireEvent.click(getByTestId('form-data-example'));
+  fireEvent.click(getByTestId('form-data-submit'));
+  await wait(() => {
+    expect(onFormSubmitHandler).toBeCalled();
+  });
+});
+
+it('form error message text', async () => {
+  const { getByTestId, queryByTestId, getByPlaceholderText, findByTestId, getByText } = render(
+    <WithAlert />
+  );
+  expect(queryByTestId('alert')).not.toBeInTheDocument();
+  fireEvent.change(getByPlaceholderText('enter data in json format'), {
+    target: { value: 'text' },
+  });
+  fireEvent.click(getByTestId('form-data-submit'));
+  expect(await findByTestId('alert')).toBeInTheDocument();
+  fireEvent.click(getByText('', { selector: '.ant-alert-close-icon' }));
+  await wait(() => {
+    expect(queryByTestId('alert')).not.toBeInTheDocument();
+  });
+});
+
+it('failure to send invalid form', async () => {
+  const onFormSubmitHandler = jest.fn();
+  const { getByTestId, getByPlaceholderText } = render(
+    <WithAlert onFormSubmit={onFormSubmitHandler} />
+  );
+  fireEvent.change(getByPlaceholderText('enter data in json format'), {
+    target: { value: 'invalid text' },
+  });
+  expect(getByPlaceholderText('enter data in json format')).toHaveValue('invalid text');
+  fireEvent.click(getByTestId('form-data-submit'));
+  await wait(() => {
+    expect(onFormSubmitHandler).not.toBeCalled();
+  });
 });

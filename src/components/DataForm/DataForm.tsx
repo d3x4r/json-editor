@@ -3,7 +3,7 @@ import AlertContext from '../../context';
 import { Form, Input, Button } from 'antd';
 const { TextArea } = Input;
 
-const JSONexample =
+export const JSONexample =
   '{"id":"0001","type":"donut","name":"Cake","image":{"url":"images/0001.jpg","width":200,"height":200},"thumbnail":{"url":"images/thumbnails/0001.jpg","width":32,"height":32}}';
 
 type DataFormProps = {
@@ -52,7 +52,11 @@ const DataForm: React.FC<DataFormProps> = (props) => {
           >
             Render Preview
           </Button>
-          <Button type="default" onClick={() => updateInputValue(JSONexample)}>
+          <Button
+            type="default"
+            onClick={() => updateInputValue(JSONexample)}
+            data-testid="form-data-example"
+          >
             Paste Example
           </Button>
         </Form.Item>

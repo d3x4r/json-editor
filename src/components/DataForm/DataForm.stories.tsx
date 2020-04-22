@@ -2,10 +2,12 @@ import React from 'react';
 import DataForm from './DataForm';
 import { action } from '@storybook/addon-actions';
 import alertContext, { AlertContextI } from '../../context/alertContext';
+import AlertState from '../../context/AlertState';
+import Alert from '../Alert';
 
 export default {
   component: DataForm,
-  title: 'Input Form',
+  title: 'Textarea form',
 };
 
 export const Default = () => {
@@ -22,3 +24,10 @@ export const Default = () => {
     </alertContext.Provider>
   );
 };
+
+export const WithAlert = ({ onFormSubmit = action('form sumbit') }) => (
+  <AlertState>
+    <Alert />
+    <DataForm updateEditorData={onFormSubmit} />
+  </AlertState>
+);

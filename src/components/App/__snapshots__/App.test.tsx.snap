@@ -100,6 +100,7 @@ Object {
                           </button>
                           <button
                             class="ant-btn ant-btn-default"
+                            data-testid="form-data-example"
                             type="button"
                           >
                             <span>
@@ -171,7 +172,9 @@ Object {
                   class="result-container"
                   data-testid="result-container"
                 >
-                  <pre>
+                  <pre
+                    class="result-container__text"
+                  >
                     {}
                   </pre>
                 </div>
@@ -278,6 +281,7 @@ Object {
                         </button>
                         <button
                           class="ant-btn ant-btn-default"
+                          data-testid="form-data-example"
                           type="button"
                         >
                           <span>
@@ -349,7 +353,9 @@ Object {
                 class="result-container"
                 data-testid="result-container"
               >
-                <pre>
+                <pre
+                  class="result-container__text"
+                >
                   {}
                 </pre>
               </div>

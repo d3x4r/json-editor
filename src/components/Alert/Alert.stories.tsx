@@ -5,17 +5,6 @@ import { initialStateInterface } from '../../context/AlertState';
 import { Button } from 'antd';
 import { action } from '@storybook/addon-actions';
 
-// import addons, { mockChannel } from '@storybook/addons';
-
-// addons.setChannel(mockChannel());
-// console.log(addons);
-// if (addons)
-// if (!addons.getChannel()) {
-//   // Provide a mock channel to prevent "Accessing nonexistent addons channel"
-//   // errors from storybook when running with Happo.
-//   addons.setChannel(mockChannel());
-// }
-
 export default {
   component: Alert,
   title: 'Alert',
